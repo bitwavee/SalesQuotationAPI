@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="SalesQuotation.API/SalesQuotation.API.csproj" />
+  <Project Path="SalesQuotation.Application/SalesQuotation.Application.csproj" />
+  <Project Path="SalesQuotation.Domain/SalesQuotation.Domain.csproj" />
+  <Project Path="SalesQuotation.Infrastructure/SalesQuotation.Infrastructure.csproj" />
+  <Project Path="SalesQuotation.Tests/SalesQuotation.Tests.csproj" />
+</Solution>
