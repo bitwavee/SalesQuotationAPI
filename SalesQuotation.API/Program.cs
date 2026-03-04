@@ -58,6 +58,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEnquiryService, EnquiryService>();
 builder.Services.AddScoped<IQuotationService, QuotationService>();
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
+builder.Services.AddScoped<IMaterialService, MaterialService>();
+builder.Services.AddScoped<IEnquiryStatusConfigService, EnquiryStatusConfigService>();
+builder.Services.AddScoped<IPdfService, PdfService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IMeasurementConversionService, MeasurementConversionService>();
 
 // ========== VALIDATION ==========
 builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
@@ -109,7 +115,9 @@ app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRoleBasedAccessControl();
 app.MapControllers();
+app.UseStaticFiles(); // For serving PDFs and uploaded files
 
 // ========== DATABASE MIGRATION & INITIALIZATION ==========
 using (var scope = app.Services.CreateScope())

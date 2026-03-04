@@ -1,5 +1,9 @@
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SalesQuotation.Application.Dtos;
+using SalesQuotation.Domain.Entities;
+using SalesQuotation.Infrastructure.Data;
 
 namespace SalesQuotation.Application.Services;
 
@@ -8,40 +12,177 @@ namespace SalesQuotation.Application.Services;
 /// </summary>
 public class EnquiryService : IEnquiryService
 {
+    private readonly ApplicationDbContext _context;
+    private readonly IMapper _mapper;
     private readonly ILogger<EnquiryService> _logger;
 
-    public EnquiryService(ILogger<EnquiryService> logger)
+    public EnquiryService(ApplicationDbContext context, IMapper mapper, ILogger<EnquiryService> logger)
     {
+        _context = context;
+        _mapper = mapper;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public Task<IEnumerable<EnquiryDto>> GetAllAsync()
+    public async Task<IEnumerable<EnquiryDto>> GetAllAsync()
     {
         _logger.LogInformation("Getting all enquiries");
-        throw new NotImplementedException();
+        
+        var enquiries = await _context.Enquiries
+            .Include(e => e.AssignedStaff)
+            .Include(e => e.Measurements)
+            .Include(e => e.Quotations)
+            .Where(e => !e.IsDeleted)
+            .ToListAsync();
+
+        return _mapper.Map<IEnumerable<EnquiryDto>>(enquiries);
     }
 
-    public Task<EnquiryDto?> GetByIdAsync(Guid id)
+    public async Task<IEnumerable<EnquiryDto>> GetStaffEnquiriesAsync(Guid staffId)
+    {
+        _logger.LogInformation("Getting enquiries for staff: {StaffId}", staffId);
+        
+        var enquiries = await _context.Enquiries
+            .Include(e => e.AssignedStaff)
+            .Include(e => e.Measurements)
+            .Include(e => e.Quotations)
+            .Where(e => e.AssignedStaffId == staffId && !e.IsDeleted)
+            .ToListAsync();
+
+        return _mapper.Map<IEnumerable<EnquiryDto>>(enquiries);
+    }
+
+    public async Task<EnquiryDto?> GetByIdAsync(Guid id)
     {
         _logger.LogInformation("Getting enquiry with ID: {EnquiryId}", id);
-        throw new NotImplementedException();
+        
+        var enquiry = await _context.Enquiries
+            .Include(e => e.AssignedStaff)
+            .Include(e => e.Measurements)
+            .Include(e => e.Quotations)
+            .FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
+
+        return enquiry != null ? _mapper.Map<EnquiryDto>(enquiry) : null;
     }
 
-    public Task<EnquiryDto> CreateAsync(CreateEnquiryDto dto)
+    public async Task<EnquiryDto> CreateAsync(CreateEnquiryDto dto)
     {
-        _logger.LogInformation("Creating new enquiry");
-        throw new NotImplementedException();
+        _logger.LogInformation("Creating new enquiry for customer: {CustomerName}", dto.CustomerName);
+        
+        var enquiry = new Enquiry
+        {
+            Id = Guid.NewGuid(),
+            EnquiryNumber = GenerateEnquiryNumber(),
+            CustomerName = dto.CustomerName,
+            CustomerEmail = dto.CustomerEmail,
+            CustomerPhone = dto.CustomerPhone,
+            CustomerAddress = dto.CustomerAddress,
+            Status = "INITIATED",
+            Notes = dto.Notes,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _context.Enquiries.Add(enquiry);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Enquiry created successfully: {EnquiryId}", enquiry.Id);
+
+        return _mapper.Map<EnquiryDto>(enquiry);
     }
 
-    public Task UpdateAsync(Guid id, UpdateEnquiryDto dto)
+    public async Task UpdateAsync(Guid id, UpdateEnquiryDto dto)
     {
         _logger.LogInformation("Updating enquiry with ID: {EnquiryId}", id);
-        throw new NotImplementedException();
+        
+        var enquiry = await _context.Enquiries.FindAsync(id);
+
+        if (enquiry == null || enquiry.IsDeleted)
+        {
+            throw new KeyNotFoundException($"Enquiry not found: {id}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.CustomerName))
+            enquiry.CustomerName = dto.CustomerName;
+        if (!string.IsNullOrWhiteSpace(dto.CustomerEmail))
+            enquiry.CustomerEmail = dto.CustomerEmail;
+        if (!string.IsNullOrWhiteSpace(dto.CustomerPhone))
+            enquiry.CustomerPhone = dto.CustomerPhone;
+        if (!string.IsNullOrWhiteSpace(dto.CustomerAddress))
+            enquiry.CustomerAddress = dto.CustomerAddress;
+        if (!string.IsNullOrWhiteSpace(dto.Status))
+            enquiry.Status = dto.Status;
+        if (!string.IsNullOrWhiteSpace(dto.Notes))
+            enquiry.Notes = dto.Notes;
+
+        enquiry.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Enquiry updated successfully: {EnquiryId}", id);
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         _logger.LogInformation("Deleting enquiry with ID: {EnquiryId}", id);
-        throw new NotImplementedException();
+        
+        var enquiry = await _context.Enquiries.FindAsync(id);
+
+        if (enquiry == null || enquiry.IsDeleted)
+        {
+            throw new KeyNotFoundException($"Enquiry not found: {id}");
+        }
+
+        enquiry.IsDeleted = true;
+        enquiry.DeletedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Enquiry deleted successfully: {EnquiryId}", id);
+    }
+
+    public async Task<IEnumerable<EnquiryProgressDto>> GetEnquiryProgressAsync(Guid enquiryId)
+    {
+        _logger.LogInformation("Getting progress history for enquiry: {EnquiryId}", enquiryId);
+        
+        var progress = await _context.EnquiryProgress
+            .Include(p => p.CreatedBy)
+            .Where(p => p.EnquiryId == enquiryId)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+
+        return _mapper.Map<IEnumerable<EnquiryProgressDto>>(progress);
+    }
+
+    public async Task<EnquiryProgressDto> AddEnquiryProgressAsync(Guid enquiryId, CreateEnquiryProgressDto dto)
+    {
+        _logger.LogInformation("Adding progress update for enquiry: {EnquiryId}", enquiryId);
+        
+        var enquiry = await _context.Enquiries.FindAsync(enquiryId);
+
+        if (enquiry == null || enquiry.IsDeleted)
+        {
+            throw new KeyNotFoundException($"Enquiry not found: {enquiryId}");
+        }
+
+        var progress = new EnquiryProgress
+        {
+            Id = Guid.NewGuid(),
+            EnquiryId = enquiryId,
+            NewStatus = dto.Status,
+            Comment = dto.Notes,
+            CreatedById = Guid.NewGuid(), // Should be injected from context
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.EnquiryProgress.Add(progress);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Progress added successfully: {ProgressId}", progress.Id);
+
+        return _mapper.Map<EnquiryProgressDto>(progress);
+    }
+
+    private string GenerateEnquiryNumber()
+    {
+        return $"ENQ-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
     }
 }

@@ -208,3 +208,65 @@ public class UpdateMaterialDto
     public decimal? BaseCost { get; set; }
     public bool? IsActive { get; set; }
 }
+
+public class EnquiryStatusConfigDto
+{
+    public Guid Id { get; set; }
+    public string StatusName { get; set; } = string.Empty;
+    public string StatusKey { get; set; } = string.Empty;
+    public int DisplayOrder { get; set; }
+    public string? Color { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+public class CreateEnquiryStatusConfigDto
+{
+    public string StatusName { get; set; } = string.Empty;
+    public string StatusKey { get; set; } = string.Empty;
+    public int DisplayOrder { get; set; }
+    public string? Color { get; set; }
+}
+
+public class UpdateEnquiryStatusConfigDto
+{
+    public string? StatusName { get; set; }
+    public string? StatusKey { get; set; }
+    public int? DisplayOrder { get; set; }
+    public string? Color { get; set; }
+    public bool? IsActive { get; set; }
+}
+
+public class EnquiryProgressDto
+{
+    public Guid Id { get; set; }
+    public Guid EnquiryId { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+    public UserDto? UpdatedBy { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+public class CreateEnquiryProgressDto
+{
+    public string Status { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+}
+
+public class FileUploadDto
+{
+    public Guid Id { get; set; }
+    public Guid EnquiryId { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string FileType { get; set; } = string.Empty;
+    public long FileSize { get; set; }
+    public string FilePath { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
+    public DateTime UploadedAt { get; set; }
+}
+
+public class AssignEnquiryDto
+{
+    public Guid EnquiryId { get; set; }
+    public Guid StaffId { get; set; }
+}
