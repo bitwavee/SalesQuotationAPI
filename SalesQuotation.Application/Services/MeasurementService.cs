@@ -15,12 +15,14 @@ public class MeasurementService : IMeasurementService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICurrentUserService _currentUser;
     private readonly ILogger<MeasurementService> _logger;
 
-    public MeasurementService(ApplicationDbContext context, IMapper mapper, ILogger<MeasurementService> logger)
+    public MeasurementService(ApplicationDbContext context, IMapper mapper, ICurrentUserService currentUser, ILogger<MeasurementService> logger)
     {
         _context = context;
         _mapper = mapper;
+        _currentUser = currentUser;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -104,6 +106,7 @@ public class MeasurementService : IMeasurementService
             MeasurementData = measurementDataJson,
             CalculatedValue = calculatedValue,
             Notes = dto.Notes,
+            CreatedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

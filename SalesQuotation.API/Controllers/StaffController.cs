@@ -14,11 +14,13 @@ namespace SalesQuotation.API.Controllers;
 public class StaffController : ControllerBase
 {
     private readonly IStaffService _staffService;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<StaffController> _logger;
 
-    public StaffController(IStaffService staffService, ILogger<StaffController> logger)
+    public StaffController(IStaffService staffService, IConfiguration configuration, ILogger<StaffController> logger)
     {
         _staffService = staffService;
+        _configuration = configuration;
         _logger = logger;
     }
 
@@ -236,6 +238,74 @@ public class StaffController : ControllerBase
             {
                 Success = false,
                 Error = "An error occurred while assigning enquiry",
+                Code = "INTERNAL_ERROR"
+            });
+        }
+    }
+
+    /// <summary>
+    /// Change a user's role (Admin only, requires Features:EnableRoleManagement = true)
+    /// </summary>
+    [HttpPut("{id}/role")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ApiResponse<UserDto>>> ChangeRole(Guid id, [FromBody] ChangeRoleDto request)
+    {
+        var enabled = _configuration.GetValue<bool>("Features:EnableRoleManagement");
+        if (!enabled)
+        {
+            return StatusCode(403, new ApiResponse<object>
+            {
+                Success = false,
+                Error = "Role management is disabled. Set Features:EnableRoleManagement to true in appsettings.json to enable.",
+                Code = "FEATURE_DISABLED"
+            });
+        }
+
+        try
+        {
+            var currentUserId = Guid.Parse(User.FindFirst("sub")!.Value);
+            var updated = await _staffService.ChangeUserRoleAsync(id, request.Role, currentUserId);
+
+            return Ok(new ApiResponse<UserDto>
+            {
+                Success = true,
+                Data = updated
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new ApiResponse<object>
+            {
+                Success = false,
+                Error = ex.Message,
+                Code = "INVALID_ROLE"
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ApiResponse<object>
+            {
+                Success = false,
+                Error = ex.Message,
+                Code = "NOT_FOUND"
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new ApiResponse<object>
+            {
+                Success = false,
+                Error = ex.Message,
+                Code = "BAD_REQUEST"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error changing user role");
+            return StatusCode(500, new ApiResponse<object>
+            {
+                Success = false,
+                Error = "An error occurred while changing user role",
                 Code = "INTERNAL_ERROR"
             });
         }

@@ -14,12 +14,14 @@ public class MaterialService : IMaterialService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICurrentUserService _currentUser;
     private readonly ILogger<MaterialService> _logger;
 
-    public MaterialService(ApplicationDbContext context, IMapper mapper, ILogger<MaterialService> logger)
+    public MaterialService(ApplicationDbContext context, IMapper mapper, ICurrentUserService currentUser, ILogger<MaterialService> logger)
     {
         _context = context;
         _mapper = mapper;
+        _currentUser = currentUser;
         _logger = logger;
     }
 
@@ -52,6 +54,7 @@ public class MaterialService : IMaterialService
             Unit = dto.Unit,
             BaseCost = dto.BaseCost,
             IsActive = true,
+            CreatedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SalesQuotation.API;
 using SalesQuotation.API.Middleware;
 using SalesQuotation.Application.Services;
 using SalesQuotation.Application.Validators;
@@ -42,6 +43,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.MapInboundClaims = false; // Keep "sub", "role" etc. as-is — don't remap to long URIs
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
@@ -49,11 +51,15 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = false,
         ValidateAudience = false,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        RoleClaimType = "role",   // [Authorize(Roles="Admin")] reads from "role"
+        NameClaimType = "unique_name"
     };
 });
 
 // ========== SERVICES ==========
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEnquiryService, EnquiryService>();
 builder.Services.AddScoped<IQuotationService, QuotationService>();
@@ -69,7 +75,7 @@ builder.Services.AddScoped<IMeasurementConversionService, MeasurementConversionS
 builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
 
 // ========== AUTO MAPPER ==========
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<SalesQuotation.Application.MappingProfile>());
 
 // ========== CONTROLLERS & CORS ==========
 builder.Services.AddControllers();
@@ -119,20 +125,7 @@ app.UseRoleBasedAccessControl();
 app.MapControllers();
 app.UseStaticFiles(); // For serving PDFs and uploaded files
 
-// ========== DATABASE MIGRATION & INITIALIZATION ==========
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate();
-        Log.Information("Database migration completed successfully");
-    }
-    catch (Exception ex)
-    {
-        Log.Error(ex, "Error during database migration");
-    }
-}
+// ========== DATABASE & SEED ==========
+await DatabaseSeeder.SeedAsync(app.Services);
 
 app.Run();

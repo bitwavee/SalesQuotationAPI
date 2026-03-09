@@ -36,4 +36,9 @@ public interface IStaffService
     /// Assign enquiry to staff member
     /// </summary>
     Task AssignEnquiryToStaffAsync(Guid enquiryId, Guid staffId);
+
+    /// <summary>
+    /// Change a user's role (requires EnableRoleManagement feature flag)
+    /// </summary>
+    Task<UserDto> ChangeUserRoleAsync(Guid userId, string newRole, Guid changedByUserId);
 }

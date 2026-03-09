@@ -1,5 +1,3 @@
-using System.Security.Claims;
-
 namespace SalesQuotation.API.Middleware;
 
 /// <summary>
@@ -37,15 +35,22 @@ public class RoleBasedAccessControlMiddleware
     {
         var path = context.Request.Path.Value?.ToLower() ?? string.Empty;
         var method = context.Request.Method;
-        var userRole = context.User.FindFirst(ClaimTypes.Role)?.Value;
+        var userRole = context.User.FindFirst("role")?.Value;
         var userId = context.User.FindFirst("sub")?.Value;
 
-        // Check admin-only endpoints
+        // Skip RBAC for unauthenticated users — let [Authorize] / [AllowAnonymous] handle it
+        if (string.IsNullOrEmpty(userRole))
+        {
+            await _next(context);
+            return;
+        }
+
+        // Check admin-only endpoints (Staff fully blocked)
         if (IsAdminOnlyEndpoint(path))
         {
             if (userRole != "Admin")
             {
-                _logger.LogWarning($"Unauthorized access attempt to admin endpoint: {path} by user role: {userRole}");
+                _logger.LogWarning("Unauthorized access attempt to admin endpoint: {Path} by role: {Role}", path, userRole);
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.WriteAsJsonAsync(new
                 {
@@ -57,33 +62,18 @@ public class RoleBasedAccessControlMiddleware
             }
         }
 
-        // Check POST/PUT/DELETE operations on restricted endpoints
-        if (IsRestrictedModificationEndpoint(path) && IsModificationMethod(method))
+        // Staff can read and create on enquiry/measurement/quotation paths
+        // Only admin can DELETE enquiries
+        if (userRole == "Staff" && path.StartsWith("/api/enquiry") && method == "DELETE")
         {
-            if (userRole != "Admin")
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsJsonAsync(new
             {
-                _logger.LogWarning($"Unauthorized modification attempt: {method} {path} by user role: {userRole}");
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsJsonAsync(new
-                {
-                    success = false,
-                    error = "Access denied. Admin role required for modifications.",
-                    code = "FORBIDDEN"
-                });
-                return;
-            }
-        }
-
-        // For staff, restrict to their own enquiries
-        if (userRole == "Staff" && IsOwnEnquiryOnlyEndpoint(path))
-        {
-            // Extract enquiry ID from path (if present)
-            if (IsEnquirySpecificOperation(path))
-            {
-                // This check should be done in the service layer for better control
-                // Here we just log the access
-                _logger.LogInformation($"Staff access to enquiry data: {path}");
-            }
+                success = false,
+                error = "Access denied. Admin role required for deleting enquiries.",
+                code = "FORBIDDEN"
+            });
+            return;
         }
 
         await _next(context);

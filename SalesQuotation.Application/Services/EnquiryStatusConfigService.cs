@@ -14,12 +14,14 @@ public class EnquiryStatusConfigService : IEnquiryStatusConfigService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICurrentUserService _currentUser;
     private readonly ILogger<EnquiryStatusConfigService> _logger;
 
-    public EnquiryStatusConfigService(ApplicationDbContext context, IMapper mapper, ILogger<EnquiryStatusConfigService> logger)
+    public EnquiryStatusConfigService(ApplicationDbContext context, IMapper mapper, ICurrentUserService currentUser, ILogger<EnquiryStatusConfigService> logger)
     {
         _context = context;
         _mapper = mapper;
+        _currentUser = currentUser;
         _logger = logger;
     }
 
@@ -56,6 +58,7 @@ public class EnquiryStatusConfigService : IEnquiryStatusConfigService
             DisplayOrder = dto.DisplayOrder,
             ColorHex = dto.Color,
             IsActive = true,
+            CreatedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

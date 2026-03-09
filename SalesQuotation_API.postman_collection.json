@@ -1,0 +1,429 @@
+{
+  "info": {
+    "name": "Sales Quotation API – Full Test Suite",
+    "description": "38 endpoints. Run folder 1 first to get a token, then run in order.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",      "value": "https://localhost:7256" },
+    { "key": "token",        "value": "" },
+    { "key": "staffToken",   "value": "" },
+    { "key": "staffId",      "value": "" },
+    { "key": "enquiryId",    "value": "" },
+    { "key": "materialId",   "value": "" },
+    { "key": "configId",     "value": "" },
+    { "key": "categoryId",   "value": "" },
+    { "key": "measurementId","value": "" },
+    { "key": "quoteId",      "value": "" },
+    { "key": "fileId",       "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1  Auth",
+      "item": [
+        {
+          "name": "1.1 Login (Admin)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "var j=pm.response.json();",
+            "if(j.success){",
+            "  pm.collectionVariables.set('token',j.data.token);",
+            "  pm.test('Login OK',()=>pm.expect(j.data.token).to.be.a('string'));",
+            "}"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"email\":\"admin@salesquotation.com\",\"password\":\"Admin@123\"}"},
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "1.2 Logout",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2  Staff",
+      "item": [
+        {
+          "name": "2.1 Get All Staff",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/staff" }
+        },
+        {
+          "name": "2.2 Create Staff",
+          "event": [{ "listen":"test","script":{"exec":[
+            "var j=pm.response.json();",
+            "if(j.success) pm.collectionVariables.set('staffId',j.data.id);"
+          ]}}],
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"name\":\"John Field\",\"email\":\"john@salesquotation.com\",\"phone\":\"9876543210\",\"password\":\"Staff@123\"}"},
+            "url":"{{baseUrl}}/api/staff"
+          }
+        },
+        {
+          "name": "2.3 Get Staff By ID",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/staff/{{staffId}}" }
+        },
+        {
+          "name": "2.4 Update Staff",
+          "request": {
+            "method":"PUT",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"name\":\"John Field Updated\",\"phone\":\"9876500000\",\"isActive\":true}"},
+            "url":"{{baseUrl}}/api/staff/{{staffId}}"
+          }
+        },
+        {
+          "name": "2.5 Change Role",
+          "request": {
+            "method":"PUT",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"role\":\"Admin\"}"},
+            "url":"{{baseUrl}}/api/staff/{{staffId}}/role"
+          }
+        },
+        {
+          "name": "2.6 Assign Enquiry",
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"enquiryId\":\"{{enquiryId}}\",\"staffId\":\"{{staffId}}\"}"},
+            "url":"{{baseUrl}}/api/staff/assign-enquiry"
+          }
+        },
+        {
+          "name": "2.7 Delete Staff",
+          "request": { "method":"DELETE", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/staff/{{staffId}}" }
+        }
+      ]
+    },
+    {
+      "name": "3  Material",
+      "item": [
+        {
+          "name": "3.1 Get All Materials",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/material" }
+        },
+        {
+          "name": "3.2 Create Material",
+          "event": [{ "listen":"test","script":{"exec":[
+            "var j=pm.response.json();",
+            "if(j.success) pm.collectionVariables.set('materialId',j.data.id);"
+          ]}}],
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"name\":\"Granite Slab 20mm\",\"description\":\"Premium black granite\",\"unit\":\"sqft\",\"baseCost\":150.00}"},
+            "url":"{{baseUrl}}/api/material"
+          }
+        },
+        {
+          "name": "3.3 Get Material By ID",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/material/{{materialId}}" }
+        },
+        {
+          "name": "3.4 Update Material",
+          "request": {
+            "method":"PUT",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"name\":\"Granite Slab 20mm - Premium\",\"baseCost\":175.50,\"isActive\":true}"},
+            "url":"{{baseUrl}}/api/material/{{materialId}}"
+          }
+        },
+        {
+          "name": "3.5 Delete Material",
+          "request": { "method":"DELETE", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/material/{{materialId}}" }
+        }
+      ]
+    },
+    {
+      "name": "4  Enquiry Status Config",
+      "item": [
+        {
+          "name": "4.1 Get All Configs",
+          "event": [{ "listen":"test","script":{"exec":[
+            "var j=pm.response.json();",
+            "if(j.success && j.data && j.data.length>0) pm.collectionVariables.set('configId',j.data[0].id);"
+          ]}}],
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/enquirystatusconfig" }
+        },
+        {
+          "name": "4.2 Create Config",
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"statusName\":\"On Hold\",\"statusKey\":\"ON_HOLD\",\"displayOrder\":7,\"color\":\"#FF9800\"}"},
+            "url":"{{baseUrl}}/api/enquirystatusconfig"
+          }
+        },
+        {
+          "name": "4.3 Get Config By ID",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/enquirystatusconfig/{{configId}}" }
+        },
+        {
+          "name": "4.4 Update Config",
+          "request": {
+            "method":"PUT",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"statusName\":\"Updated Status\",\"color\":\"#00BCD4\",\"isActive\":true}"},
+            "url":"{{baseUrl}}/api/enquirystatusconfig/{{configId}}"
+          }
+        },
+        {
+          "name": "4.5 Delete Config",
+          "request": { "method":"DELETE", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/enquirystatusconfig/{{configId}}" }
+        }
+      ]
+    },
+    {
+      "name": "5  Enquiry",
+      "item": [
+        {
+          "name": "5.1 Get All Enquiries",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/enquiry" }
+        },
+        {
+          "name": "5.2 Create Enquiry",
+          "event": [{ "listen":"test","script":{"exec":[
+            "var j=pm.response.json();",
+            "if(j.success) pm.collectionVariables.set('enquiryId',j.data.id);"
+          ]}}],
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"customerName\":\"Rajesh Kumar\",\"customerEmail\":\"rajesh@example.com\",\"customerPhone\":\"9988776655\",\"customerAddress\":\"45 MG Road, Bangalore 560001\",\"notes\":\"Interested in granite countertops\"}"},
+            "url":"{{baseUrl}}/api/enquiry"
+          }
+        },
+        {
+          "name": "5.3 Get Enquiry By ID",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/enquiry/{{enquiryId}}" }
+        },
+        {
+          "name": "5.4 Update Enquiry",
+          "request": {
+            "method":"PUT",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"customerName\":\"Rajesh Kumar (Updated)\",\"status\":\"SITE_VISITED\",\"notes\":\"Site visited on 10th March\"}"},
+            "url":"{{baseUrl}}/api/enquiry/{{enquiryId}}"
+          }
+        },
+        {
+          "name": "5.5 Delete Enquiry",
+          "request": { "method":"DELETE", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/enquiry/{{enquiryId}}" }
+        }
+      ]
+    },
+    {
+      "name": "6  Enquiry Progress",
+      "item": [
+        {
+          "name": "6.1 Get Progress History",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/enquiryprogress/enquiry/{{enquiryId}}" }
+        },
+        {
+          "name": "6.2 Add Progress",
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"status\":\"SITE_VISITED\",\"notes\":\"Visited site and took measurements\"}"},
+            "url":"{{baseUrl}}/api/enquiryprogress/enquiry/{{enquiryId}}"
+          }
+        },
+        {
+          "name": "6.3 Update Status",
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"status\":\"MEASUREMENT_DONE\",\"notes\":\"All measurements completed\"}"},
+            "url":"{{baseUrl}}/api/enquiryprogress/enquiry/{{enquiryId}}/update-status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "7  Measurement",
+      "item": [
+        {
+          "name": "7.1 Get Enquiry Measurements",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/measurement/enquiry/{{enquiryId}}" }
+        },
+        {
+          "name": "7.2 Create Measurement",
+          "event": [{ "listen":"test","script":{"exec":[
+            "var j=pm.response.json();",
+            "if(j.success) pm.collectionVariables.set('measurementId',j.data.id);"
+          ]}}],
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"categoryId\":\"{{categoryId}}\",\"measurementData\":{\"length\":3.5,\"width\":2.0},\"notes\":\"Kitchen countertop main section\"}"},
+            "url":"{{baseUrl}}/api/measurement/{{enquiryId}}"
+          }
+        },
+        {
+          "name": "7.3 Get Measurement By ID",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/measurement/{{measurementId}}" }
+        },
+        {
+          "name": "7.4 Update Measurement",
+          "request": {
+            "method":"PUT",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"measurementData\":{\"length\":4.0,\"width\":2.5},\"notes\":\"Corrected after re-check\"}"},
+            "url":"{{baseUrl}}/api/measurement/{{measurementId}}"
+          }
+        },
+        {
+          "name": "7.5 Delete Measurement",
+          "request": { "method":"DELETE", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/measurement/{{measurementId}}" }
+        },
+        {
+          "name": "7.6 Convert (generic)",
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"type\":\"meterToSqFt\",\"length\":10,\"breadth\":5}"},
+            "url":"{{baseUrl}}/api/measurement/convert"
+          }
+        },
+        {
+          "name": "7.7 Convert Meter→SqFt",
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"length\":3.5,\"breadth\":2.0}"},
+            "url":"{{baseUrl}}/api/measurement/convert/meter-to-sqft"
+          }
+        }
+      ]
+    },
+    {
+      "name": "8  Quotation",
+      "item": [
+        {
+          "name": "8.1 Get Enquiry Quotations",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/quotation/enquiry/{{enquiryId}}" }
+        },
+        {
+          "name": "8.2 Create Quotation",
+          "event": [{ "listen":"test","script":{"exec":[
+            "var j=pm.response.json();",
+            "if(j.success) pm.collectionVariables.set('quoteId',j.data.id);"
+          ]}}],
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"enquiryId\":\"{{enquiryId}}\",\"quotationNumber\":\"QT-2026-0001\",\"taxPercentage\":18.0,\"notes\":\"Granite countertop installation\"}"},
+            "url":"{{baseUrl}}/api/quotation"
+          }
+        },
+        {
+          "name": "8.3 Get Quotation By ID",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/quotation/{{quoteId}}" }
+        },
+        {
+          "name": "8.4 Update Quotation",
+          "request": {
+            "method":"PUT",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"raw","raw":"{\"taxPercentage\":12.0,\"notes\":\"GST reduced to 12 percent\",\"status\":\"FINAL\"}"},
+            "url":"{{baseUrl}}/api/quotation/{{quoteId}}"
+          }
+        },
+        {
+          "name": "8.5 Generate PDF",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/quotation/{{quoteId}}/pdf" }
+        },
+        {
+          "name": "8.6 Download Saved PDF",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/quotation/{{quoteId}}/download-pdf" }
+        },
+        {
+          "name": "8.7 Send Quotation",
+          "request": { "method":"POST", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/quotation/{{quoteId}}/send" }
+        },
+        {
+          "name": "8.8 Delete Quotation",
+          "request": { "method":"DELETE", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/quotation/{{quoteId}}" }
+        }
+      ]
+    },
+    {
+      "name": "9  File Upload",
+      "item": [
+        {
+          "name": "9.1 Upload File",
+          "event": [{ "listen":"test","script":{"exec":[
+            "var j=pm.response.json();",
+            "if(j.success) pm.collectionVariables.set('fileId',j.data.id);"
+          ]}}],
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Authorization","value":"Bearer {{token}}"}],
+            "body":{"mode":"formdata","formdata":[{"key":"file","type":"file","src":""}]},
+            "url":{"raw":"{{baseUrl}}/api/file/upload/{{enquiryId}}?category=SITE_PHOTO","host":["{{baseUrl}}"],"path":["api","file","upload","{{enquiryId}}"],"query":[{"key":"category","value":"SITE_PHOTO"}]}
+          }
+        },
+        {
+          "name": "9.2 Get Enquiry Files",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/file/enquiry/{{enquiryId}}" }
+        },
+        {
+          "name": "9.3 Get File By ID",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/file/{{fileId}}" }
+        },
+        {
+          "name": "9.4 Download File",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/file/download/{{fileId}}" }
+        },
+        {
+          "name": "9.5 Delete File",
+          "request": { "method":"DELETE", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url":"{{baseUrl}}/api/file/{{fileId}}" }
+        }
+      ]
+    },
+    {
+      "name": "10  Staff Access Tests",
+      "item": [
+        {
+          "name": "10.1 Login as Staff",
+          "event": [{ "listen":"test","script":{"exec":[
+            "var j=pm.response.json();",
+            "if(j.success) pm.collectionVariables.set('staffToken',j.data.token);"
+          ]}}],
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"}],
+            "body":{"mode":"raw","raw":"{\"email\":\"john@salesquotation.com\",\"password\":\"Staff@123\"}"},
+            "url":"{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "10.2 Staff → GET enquiries (200 OK)",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{staffToken}}"}], "url":"{{baseUrl}}/api/enquiry" }
+        },
+        {
+          "name": "10.3 Staff → GET staff list (403)",
+          "request": { "method":"GET", "header":[{"key":"Authorization","value":"Bearer {{staffToken}}"}], "url":"{{baseUrl}}/api/staff" }
+        },
+        {
+          "name": "10.4 Staff → POST material (403)",
+          "request": {
+            "method":"POST",
+            "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{staffToken}}"}],
+            "body":{"mode":"raw","raw":"{\"name\":\"Test\",\"unit\":\"sqft\",\"baseCost\":10}"},
+            "url":"{{baseUrl}}/api/material"
+          }
+        }
+      ]
+    }
+  ]
+}

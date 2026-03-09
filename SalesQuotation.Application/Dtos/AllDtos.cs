@@ -65,6 +65,14 @@ public class UpdateUserDto
     public bool? IsActive { get; set; }
 }
 
+public class ChangeRoleDto
+{
+    /// <summary>
+    /// Target role: "Admin" or "Staff"
+    /// </summary>
+    public string Role { get; set; } = string.Empty;
+}
+
 public class EnquiryDto
 {
     public Guid Id { get; set; }

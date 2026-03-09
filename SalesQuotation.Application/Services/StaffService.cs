@@ -144,6 +144,39 @@ public class StaffService : IStaffService
         _logger.LogInformation($"Enquiry assigned successfully");
     }
 
+    public async Task<UserDto> ChangeUserRoleAsync(Guid userId, string newRole, Guid changedByUserId)
+    {
+        _logger.LogInformation("Changing role for user {UserId} to {NewRole} by {ChangedBy}", userId, newRole, changedByUserId);
+
+        if (!Enum.TryParse<UserRole>(newRole, ignoreCase: true, out var parsedRole))
+        {
+            throw new ArgumentException($"Invalid role: '{newRole}'. Allowed values: Admin, Staff");
+        }
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId && !u.IsDeleted);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User not found: {userId}");
+        }
+
+        if (user.Id == changedByUserId && parsedRole != UserRole.Admin)
+        {
+            throw new InvalidOperationException("Cannot demote yourself");
+        }
+
+        var oldRole = user.Role;
+        user.Role = parsedRole;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("User {UserId} role changed from {OldRole} to {NewRole}", userId, oldRole, parsedRole);
+
+        return _mapper.Map<UserDto>(user);
+    }
+
     private string HashPassword(string password)
     {
         using (var hmac = new HMACSHA256())

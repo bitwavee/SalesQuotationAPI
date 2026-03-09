@@ -1,0 +1,254 @@
+Using launch settings from SalesQuotation.API\Properties\launchSettings.json...
+[01:34:59 INF] Executed DbCommand (18ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT 1
+[01:34:59 INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+[01:34:59 INF] Executed DbCommand (17ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+[01:34:59 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+[01:34:59 INF] Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT 1
+[01:34:59 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+[01:34:59 INF] Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+[01:34:59 INF] No migrations were applied. The database is already up to date.
+[01:34:59 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+[01:34:59 INF] Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[Role] = N'Admin' AND [u].[IsDeleted] = CAST(0 AS bit)) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+[01:34:59 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeletedAt], [u].[Email], [u].[IsActive], [u].[IsDeleted], [u].[Name], [u].[PasswordHash], [u].[Phone], [u].[Role], [u].[UpdatedAt]
+FROM [Users] AS [u]
+WHERE [u].[Role] = N'Admin' AND [u].[IsDeleted] = CAST(0 AS bit)
+[01:35:00 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [MeasurementCategories] AS [m]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+[01:35:00 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [EnquiryStatusConfigs] AS [e]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+[01:35:00 INF] User profile is available. Using 'C:\Users\rahul\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+[01:35:00 WRN] The WebRootPath was not found: E:\Work\SalesQuotationProjects\SalesQuotation.API\wwwroot. Static files may be unavailable.
+[01:35:00 INF] Now listening on: http://localhost:5132
+[01:35:00 INF] Application started. Press Ctrl+C to shut down.
+[01:35:00 INF] Hosting environment: Development
+[01:35:00 INF] Content root path: E:\Work\SalesQuotationProjects\SalesQuotation.API
+[01:35:10 INF] Request starting HTTP/1.1 POST http://localhost:5132/api/auth/login - application/json 59
+[01:35:10 WRN] Failed to determine the https port for redirect.
+[01:35:10 INF] Executing endpoint 'SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API)'
+[01:35:10 INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[SalesQuotation.Application.Dtos.LoginResponseDto]]] Login(SalesQuotation.Application.Dtos.LoginRequestDto) on controller SalesQuotation.API.Controllers.AuthController (SalesQuotation.API).
+[01:35:10 INF] Executed DbCommand (10ms) [Parameters=[@email='?' (Size = 255)], CommandType='Text', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeletedAt], [u].[Email], [u].[IsActive], [u].[IsDeleted], [u].[Name], [u].[PasswordHash], [u].[Phone], [u].[Role], [u].[UpdatedAt]
+FROM [Users] AS [u]
+WHERE [u].[Email] = @email AND [u].[IsDeleted] = CAST(0 AS bit) AND [u].[IsActive] = CAST(1 AS bit)
+[01:35:10 INF] User admin@salesquotation.com logged in successfully
+[01:35:10 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[SalesQuotation.Application.Dtos.LoginResponseDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+[01:35:10 INF] Executed action SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API) in 94.3966ms
+[01:35:10 INF] Executed endpoint 'SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API)'
+[01:35:10 INF] Request finished HTTP/1.1 POST http://localhost:5132/api/auth/login - 200 null application/json; charset=utf-8 161.5359ms
+[01:35:16 INF] Request starting HTTP/1.1 POST http://localhost:5132/api/auth/login - application/json 59
+[01:35:16 INF] Executing endpoint 'SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API)'
+[01:35:16 INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[SalesQuotation.Application.Dtos.LoginResponseDto]]] Login(SalesQuotation.Application.Dtos.LoginRequestDto) on controller SalesQuotation.API.Controllers.AuthController (SalesQuotation.API).
+[01:35:16 INF] Executed DbCommand (0ms) [Parameters=[@email='?' (Size = 255)], CommandType='Text', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeletedAt], [u].[Email], [u].[IsActive], [u].[IsDeleted], [u].[Name], [u].[PasswordHash], [u].[Phone], [u].[Role], [u].[UpdatedAt]
+FROM [Users] AS [u]
+WHERE [u].[Email] = @email AND [u].[IsDeleted] = CAST(0 AS bit) AND [u].[IsActive] = CAST(1 AS bit)
+[01:35:16 INF] User admin@salesquotation.com logged in successfully
+[01:35:16 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[SalesQuotation.Application.Dtos.LoginResponseDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+[01:35:16 INF] Executed action SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API) in 48.2855ms
+[01:35:16 INF] Executed endpoint 'SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API)'
+[01:35:16 INF] Request finished HTTP/1.1 POST http://localhost:5132/api/auth/login - 200 null application/json; charset=utf-8 52.5618ms
+[01:35:16 INF] Request starting HTTP/1.1 POST http://localhost:5132/api/enquiry - application/json 137
+[01:35:16 INF] Executing endpoint 'SalesQuotation.API.Controllers.EnquiryController.Create (SalesQuotation.API)'
+[01:35:16 INF] Route matched with {action = "Create", controller = "Enquiry"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[SalesQuotation.Application.Dtos.EnquiryDto]]] Create(SalesQuotation.Application.Dtos.CreateEnquiryDto) on controller SalesQuotation.API.Controllers.EnquiryController (SalesQuotation.API).
+[01:35:16 WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+[01:35:16 INF] Creating new enquiry for customer: Rajesh Kumar
+[01:35:16 INF] Executed DbCommand (74ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p4='?' (Size = 4000), @p5='?' (Size = 4000), @p6='?' (Size = 4000), @p7='?' (Size = 4000), @p8='?' (DbType = DateTime2), @p9='?' (Size = 50), @p10='?' (DbType = Boolean), @p11='?' (Size = 4000), @p12='?' (Size = 4000), @p13='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Enquiries] ([Id], [AssignedStaffId], [CreatedAt], [CreatedById], [CustomerAddress], [CustomerEmail], [CustomerName], [CustomerPhone], [DeletedAt], [EnquiryNumber], [IsDeleted], [Notes], [Status], [UpdatedAt])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13);
+[01:35:16 INF] Enquiry created successfully: b2db4c00-3c5a-4cdd-a3e5-38bd83786c56
+[01:35:16 INF] Executing CreatedAtActionResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[SalesQuotation.Application.Dtos.EnquiryDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+[01:35:16 INF] Executed action SalesQuotation.API.Controllers.EnquiryController.Create (SalesQuotation.API) in 261.12ms
+[01:35:16 INF] Executed endpoint 'SalesQuotation.API.Controllers.EnquiryController.Create (SalesQuotation.API)'
+[01:35:16 INF] Request finished HTTP/1.1 POST http://localhost:5132/api/enquiry - 201 null application/json; charset=utf-8 294.3101ms
+[01:35:27 INF] Request starting HTTP/1.1 POST http://localhost:5132/api/auth/login - application/json 59
+[01:35:27 INF] Executing endpoint 'SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API)'
+[01:35:27 INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[SalesQuotation.Application.Dtos.LoginResponseDto]]] Login(SalesQuotation.Application.Dtos.LoginRequestDto) on controller SalesQuotation.API.Controllers.AuthController (SalesQuotation.API).
+[01:35:27 INF] Executed DbCommand (0ms) [Parameters=[@email='?' (Size = 255)], CommandType='Text', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeletedAt], [u].[Email], [u].[IsActive], [u].[IsDeleted], [u].[Name], [u].[PasswordHash], [u].[Phone], [u].[Role], [u].[UpdatedAt]
+FROM [Users] AS [u]
+WHERE [u].[Email] = @email AND [u].[IsDeleted] = CAST(0 AS bit) AND [u].[IsActive] = CAST(1 AS bit)
+[01:35:27 INF] User admin@salesquotation.com logged in successfully
+[01:35:27 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[SalesQuotation.Application.Dtos.LoginResponseDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+[01:35:27 INF] Executed action SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API) in 4.4134ms
+[01:35:27 INF] Executed endpoint 'SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API)'
+[01:35:27 INF] Request finished HTTP/1.1 POST http://localhost:5132/api/auth/login - 200 null application/json; charset=utf-8 6.5864ms
+[01:35:27 INF] Request starting HTTP/1.1 GET http://localhost:5132/api/enquiry - null null
+[01:35:27 INF] Executing endpoint 'SalesQuotation.API.Controllers.EnquiryController.GetAll (SalesQuotation.API)'
+[01:35:27 INF] Route matched with {action = "GetAll", controller = "Enquiry"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[System.Collections.Generic.IEnumerable`1[SalesQuotation.Application.Dtos.EnquiryDto]]]] GetAll() on controller SalesQuotation.API.Controllers.EnquiryController (SalesQuotation.API).
+[01:35:27 INF] Getting enquiries for staff: eb5d9739-ca49-45bd-b839-2e997af9293a
+[01:35:27 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+[01:35:27 INF] Executed DbCommand (13ms) [Parameters=[@staffId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+SELECT [e].[Id], [e].[AssignedStaffId], [e].[CreatedAt], [e].[CreatedById], [e].[CustomerAddress], [e].[CustomerEmail], [e].[CustomerName], [e].[CustomerPhone], [e].[DeletedAt], [e].[EnquiryNumber], [e].[IsDeleted], [e].[Notes], [e].[Status], [e].[UpdatedAt], [u].[Id], [u].[CreatedAt], [u].[DeletedAt], [u].[Email], [u].[IsActive], [u].[IsDeleted], [u].[Name], [u].[PasswordHash], [u].[Phone], [u].[Role], [u].[UpdatedAt], [m].[Id], [m].[CalculatedValue], [m].[CategoryId], [m].[CreatedAt], [m].[CreatedById], [m].[EnquiryId], [m].[MeasurementData], [m].[Notes], [m].[UpdatedAt], [q].[Id], [q].[CreatedAt], [q].[CreatedById], [q].[EnquiryId], [q].[Notes], [q].[PdfPath], [q].[QuotationDate], [q].[QuotationNumber], [q].[SentAt], [q].[Status], [q].[Subtotal], [q].[TaxAmount], [q].[TaxPercentage], [q].[TotalAmount], [q].[UpdatedAt], [q].[ValidUntil]
+FROM [Enquiries] AS [e]
+LEFT JOIN [Users] AS [u] ON [e].[AssignedStaffId] = [u].[Id]
+LEFT JOIN [Measurements] AS [m] ON [e].[Id] = [m].[EnquiryId]
+LEFT JOIN [Quotations] AS [q] ON [e].[Id] = [q].[EnquiryId]
+WHERE [e].[AssignedStaffId] = @staffId AND [e].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [e].[Id], [u].[Id], [m].[Id]
+[01:35:27 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[SalesQuotation.Application.Dtos.EnquiryDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+[01:35:27 INF] Executed action SalesQuotation.API.Controllers.EnquiryController.GetAll (SalesQuotation.API) in 107.042ms
+[01:35:27 INF] Executed endpoint 'SalesQuotation.API.Controllers.EnquiryController.GetAll (SalesQuotation.API)'
+[01:35:27 INF] Request finished HTTP/1.1 GET http://localhost:5132/api/enquiry - 200 null application/json; charset=utf-8 116.0989ms
+[01:35:27 INF] Request starting HTTP/1.1 GET http://localhost:5132/api/staff - null null
+[01:35:27 INF] Executing endpoint 'SalesQuotation.API.Controllers.StaffController.GetAllStaff (SalesQuotation.API)'
+[01:35:27 INF] Route matched with {action = "GetAllStaff", controller = "Staff"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[System.Collections.Generic.IEnumerable`1[SalesQuotation.Application.Dtos.UserDto]]]] GetAllStaff() on controller SalesQuotation.API.Controllers.StaffController (SalesQuotation.API).
+[01:35:27 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT [u].[Id], [u].[CreatedAt], [u].[DeletedAt], [u].[Email], [u].[IsActive], [u].[IsDeleted], [u].[Name], [u].[PasswordHash], [u].[Phone], [u].[Role], [u].[UpdatedAt]
+FROM [Users] AS [u]
+WHERE [u].[Role] = N'Staff' AND [u].[IsDeleted] = CAST(0 AS bit)
+[01:35:27 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[SalesQuotation.Application.Dtos.UserDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+[01:35:27 INF] Executed action SalesQuotation.API.Controllers.StaffController.GetAllStaff (SalesQuotation.API) in 14.0667ms
+[01:35:27 INF] Executed endpoint 'SalesQuotation.API.Controllers.StaffController.GetAllStaff (SalesQuotation.API)'
+[01:35:27 INF] Request finished HTTP/1.1 GET http://localhost:5132/api/staff - 200 null application/json; charset=utf-8 23.1442ms
+[01:35:27 INF] Request starting HTTP/1.1 POST http://localhost:5132/api/staff - application/json 89
+[01:35:27 INF] Executing endpoint 'SalesQuotation.API.Controllers.StaffController.CreateStaff (SalesQuotation.API)'
+[01:35:27 INF] Route matched with {action = "CreateStaff", controller = "Staff"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[SalesQuotation.Application.Dtos.UserDto]]] CreateStaff(SalesQuotation.Application.Dtos.CreateUserDto) on controller SalesQuotation.API.Controllers.StaffController (SalesQuotation.API).
+[01:35:27 INF] Creating new staff member: john@test.com
+[01:35:27 INF] Executed DbCommand (2ms) [Parameters=[@dto_Email='?' (Size = 255)], CommandType='Text', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[Email] = @dto_Email AND [u].[IsDeleted] = CAST(0 AS bit)) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+[01:35:27 INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime2), @p2='?' (DbType = DateTime2), @p3='?' (Size = 255), @p4='?' (DbType = Boolean), @p5='?' (DbType = Boolean), @p6='?' (Size = 255), @p7='?' (Size = 4000), @p8='?' (Size = 4000), @p9='?' (Size = 4000), @p10='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Users] ([Id], [CreatedAt], [DeletedAt], [Email], [IsActive], [IsDeleted], [Name], [PasswordHash], [Phone], [Role], [UpdatedAt])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10);
+[01:35:27 INF] Staff member created successfully: 8f94b4d9-c99a-4e5b-88be-d6fd760eff59
+[01:35:27 INF] Executing CreatedAtActionResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[SalesQuotation.Application.Dtos.UserDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+[01:35:27 INF] Executed action SalesQuotation.API.Controllers.StaffController.CreateStaff (SalesQuotation.API) in 29.358ms
+[01:35:27 INF] Executed endpoint 'SalesQuotation.API.Controllers.StaffController.CreateStaff (SalesQuotation.API)'
+[01:35:27 INF] Request finished HTTP/1.1 POST http://localhost:5132/api/staff - 201 null application/json; charset=utf-8 37.0353ms
+[01:35:27 INF] Request starting HTTP/1.1 GET http://localhost:5132/api/material - null null
+[01:35:27 INF] Executing endpoint 'SalesQuotation.API.Controllers.MaterialController.GetAllMaterials (SalesQuotation.API)'
+[01:35:27 INF] Route matched with {action = "GetAllMaterials", controller = "Material"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[System.Collections.Generic.IEnumerable`1[SalesQuotation.Application.Dtos.MaterialDto]]]] GetAllMaterials() on controller SalesQuotation.API.Controllers.MaterialController (SalesQuotation.API).
+[01:35:27 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT [m].[Id], [m].[BaseCost], [m].[CreatedAt], [m].[CreatedById], [m].[Description], [m].[IsActive], [m].[Name], [m].[Unit], [m].[UpdatedAt]
+FROM [Materials] AS [m]
+WHERE [m].[IsActive] = CAST(1 AS bit)
+[01:35:27 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[SalesQuotation.Application.Dtos.MaterialDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+[01:35:27 INF] Executed action SalesQuotation.API.Controllers.MaterialController.GetAllMaterials (SalesQuotation.API) in 17.0553ms
+[01:35:27 INF] Executed endpoint 'SalesQuotation.API.Controllers.MaterialController.GetAllMaterials (SalesQuotation.API)'
+[01:35:27 INF] Request finished HTTP/1.1 GET http://localhost:5132/api/material - 200 null application/json; charset=utf-8 23.6288ms
+[01:35:27 INF] Request starting HTTP/1.1 POST http://localhost:5132/api/material - application/json 76
+[01:35:27 INF] Executing endpoint 'SalesQuotation.API.Controllers.MaterialController.CreateMaterial (SalesQuotation.API)'
+[01:35:27 INF] Route matched with {action = "CreateMaterial", controller = "Material"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[SalesQuotation.Application.Dtos.MaterialDto]]] CreateMaterial(SalesQuotation.Application.Dtos.CreateMaterialDto) on controller SalesQuotation.API.Controllers.MaterialController (SalesQuotation.API).
+[01:35:27 INF] Creating new material: Granite 20mm
+[01:35:27 INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p2='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p4='?' (Size = 4000), @p5='?' (DbType = Boolean), @p6='?' (Size = 255), @p7='?' (Size = 4000), @p8='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Materials] ([Id], [BaseCost], [CreatedAt], [CreatedById], [Description], [IsActive], [Name], [Unit], [UpdatedAt])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8);
+[01:35:27 INF] Material created successfully: 59d2282f-67cb-4d84-8346-664baa9022d7
+[01:35:27 INF] Executing CreatedAtActionResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[SalesQuotation.Application.Dtos.MaterialDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+[01:35:27 INF] Executed action SalesQuotation.API.Controllers.MaterialController.CreateMaterial (SalesQuotation.API) in 40.3195ms
+[01:35:27 INF] Executed endpoint 'SalesQuotation.API.Controllers.MaterialController.CreateMaterial (SalesQuotation.API)'
+[01:35:27 INF] Request finished HTTP/1.1 POST http://localhost:5132/api/material - 201 null application/json; charset=utf-8 47.5924ms
+[01:35:27 INF] Request starting HTTP/1.1 GET http://localhost:5132/api/enquirystatusconfig - null null
+[01:35:27 INF] Executing endpoint 'SalesQuotation.API.Controllers.EnquiryStatusConfigController.GetAllStatusConfigs (SalesQuotation.API)'
+[01:35:27 INF] Route matched with {action = "GetAllStatusConfigs", controller = "EnquiryStatusConfig"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[System.Collections.Generic.IEnumerable`1[SalesQuotation.Application.Dtos.EnquiryStatusConfigDto]]]] GetAllStatusConfigs() on controller SalesQuotation.API.Controllers.EnquiryStatusConfigController (SalesQuotation.API).
+[01:35:27 INF] Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT [e].[Id], [e].[ColorHex], [e].[CreatedAt], [e].[CreatedById], [e].[DisplayOrder], [e].[IsActive], [e].[StatusName], [e].[StatusValue], [e].[UpdatedAt]
+FROM [EnquiryStatusConfigs] AS [e]
+WHERE [e].[IsActive] = CAST(1 AS bit)
+ORDER BY [e].[DisplayOrder]
+[01:35:27 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[SalesQuotation.Application.Dtos.EnquiryStatusConfigDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+[01:35:27 INF] Executed action SalesQuotation.API.Controllers.EnquiryStatusConfigController.GetAllStatusConfigs (SalesQuotation.API) in 30.1686ms
+[01:35:27 INF] Executed endpoint 'SalesQuotation.API.Controllers.EnquiryStatusConfigController.GetAllStatusConfigs (SalesQuotation.API)'
+[01:35:27 INF] Request finished HTTP/1.1 GET http://localhost:5132/api/enquirystatusconfig - 200 null application/json; charset=utf-8 36.2923ms
+[01:35:34 INF] Request starting HTTP/1.1 POST http://localhost:5132/api/auth/login - application/json 59
+[01:35:34 INF] Executing endpoint 'SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API)'
+[01:35:34 INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[SalesQuotation.Application.Dtos.LoginResponseDto]]] Login(SalesQuotation.Application.Dtos.LoginRequestDto) on controller SalesQuotation.API.Controllers.AuthController (SalesQuotation.API).
+[01:35:34 INF] Executed DbCommand (1ms) [Parameters=[@email='?' (Size = 255)], CommandType='Text', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[DeletedAt], [u].[Email], [u].[IsActive], [u].[IsDeleted], [u].[Name], [u].[PasswordHash], [u].[Phone], [u].[Role], [u].[UpdatedAt]
+FROM [Users] AS [u]
+WHERE [u].[Email] = @email AND [u].[IsDeleted] = CAST(0 AS bit) AND [u].[IsActive] = CAST(1 AS bit)
+[01:35:34 INF] User admin@salesquotation.com logged in successfully
+[01:35:34 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[SalesQuotation.Application.Dtos.LoginResponseDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+[01:35:34 INF] Executed action SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API) in 3.1293ms
+[01:35:34 INF] Executed endpoint 'SalesQuotation.API.Controllers.AuthController.Login (SalesQuotation.API)'
+[01:35:34 INF] Request finished HTTP/1.1 POST http://localhost:5132/api/auth/login - 200 null application/json; charset=utf-8 5.2242ms
+[01:35:38 INF] Request starting HTTP/1.1 GET http://localhost:5132/api/enquiry - null null
+[01:35:38 INF] Executing endpoint 'SalesQuotation.API.Controllers.EnquiryController.GetAll (SalesQuotation.API)'
+[01:35:38 INF] Route matched with {action = "GetAll", controller = "Enquiry"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[System.Collections.Generic.IEnumerable`1[SalesQuotation.Application.Dtos.EnquiryDto]]]] GetAll() on controller SalesQuotation.API.Controllers.EnquiryController (SalesQuotation.API).
+[01:35:38 INF] Getting enquiries for staff: eb5d9739-ca49-45bd-b839-2e997af9293a
+[01:35:38 INF] Executed DbCommand (0ms) [Parameters=[@staffId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+SELECT [e].[Id], [e].[AssignedStaffId], [e].[CreatedAt], [e].[CreatedById], [e].[CustomerAddress], [e].[CustomerEmail], [e].[CustomerName], [e].[CustomerPhone], [e].[DeletedAt], [e].[EnquiryNumber], [e].[IsDeleted], [e].[Notes], [e].[Status], [e].[UpdatedAt], [u].[Id], [u].[CreatedAt], [u].[DeletedAt], [u].[Email], [u].[IsActive], [u].[IsDeleted], [u].[Name], [u].[PasswordHash], [u].[Phone], [u].[Role], [u].[UpdatedAt], [m].[Id], [m].[CalculatedValue], [m].[CategoryId], [m].[CreatedAt], [m].[CreatedById], [m].[EnquiryId], [m].[MeasurementData], [m].[Notes], [m].[UpdatedAt], [q].[Id], [q].[CreatedAt], [q].[CreatedById], [q].[EnquiryId], [q].[Notes], [q].[PdfPath], [q].[QuotationDate], [q].[QuotationNumber], [q].[SentAt], [q].[Status], [q].[Subtotal], [q].[TaxAmount], [q].[TaxPercentage], [q].[TotalAmount], [q].[UpdatedAt], [q].[ValidUntil]
+FROM [Enquiries] AS [e]
+LEFT JOIN [Users] AS [u] ON [e].[AssignedStaffId] = [u].[Id]
+LEFT JOIN [Measurements] AS [m] ON [e].[Id] = [m].[EnquiryId]
+LEFT JOIN [Quotations] AS [q] ON [e].[Id] = [q].[EnquiryId]
+WHERE [e].[AssignedStaffId] = @staffId AND [e].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [e].[Id], [u].[Id], [m].[Id]
+[01:35:38 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[SalesQuotation.Application.Dtos.EnquiryDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+[01:35:38 INF] Executed action SalesQuotation.API.Controllers.EnquiryController.GetAll (SalesQuotation.API) in 5.4889ms
+[01:35:38 INF] Executed endpoint 'SalesQuotation.API.Controllers.EnquiryController.GetAll (SalesQuotation.API)'
+[01:35:38 INF] Request finished HTTP/1.1 GET http://localhost:5132/api/enquiry - 200 null application/json; charset=utf-8 7.8177ms
+[01:35:42 INF] Request starting HTTP/1.1 GET http://localhost:5132/api/staff - null null
+[01:35:42 INF] Executing endpoint 'SalesQuotation.API.Controllers.StaffController.GetAllStaff (SalesQuotation.API)'
+[01:35:42 INF] Route matched with {action = "GetAllStaff", controller = "Staff"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[System.Collections.Generic.IEnumerable`1[SalesQuotation.Application.Dtos.UserDto]]]] GetAllStaff() on controller SalesQuotation.API.Controllers.StaffController (SalesQuotation.API).
+[01:35:42 INF] Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT [u].[Id], [u].[CreatedAt], [u].[DeletedAt], [u].[Email], [u].[IsActive], [u].[IsDeleted], [u].[Name], [u].[PasswordHash], [u].[Phone], [u].[Role], [u].[UpdatedAt]
+FROM [Users] AS [u]
+WHERE [u].[Role] = N'Staff' AND [u].[IsDeleted] = CAST(0 AS bit)
+[01:35:42 INF] Executing OkObjectResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[SalesQuotation.Application.Dtos.UserDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+[01:35:42 INF] Executed action SalesQuotation.API.Controllers.StaffController.GetAllStaff (SalesQuotation.API) in 3.583ms
+[01:35:42 INF] Executed endpoint 'SalesQuotation.API.Controllers.StaffController.GetAllStaff (SalesQuotation.API)'
+[01:35:42 INF] Request finished HTTP/1.1 GET http://localhost:5132/api/staff - 200 null application/json; charset=utf-8 5.8607ms
+[01:35:48 INF] Request starting HTTP/1.1 POST http://localhost:5132/api/material - application/json 76
+[01:35:48 INF] Executing endpoint 'SalesQuotation.API.Controllers.MaterialController.CreateMaterial (SalesQuotation.API)'
+[01:35:48 INF] Route matched with {action = "CreateMaterial", controller = "Material"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[SalesQuotation.Application.Dtos.ApiResponse`1[SalesQuotation.Application.Dtos.MaterialDto]]] CreateMaterial(SalesQuotation.Application.Dtos.CreateMaterialDto) on controller SalesQuotation.API.Controllers.MaterialController (SalesQuotation.API).
+[01:35:48 INF] Creating new material: Granite 20mm
+[01:35:48 INF] Executed DbCommand (40ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p2='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p4='?' (Size = 4000), @p5='?' (DbType = Boolean), @p6='?' (Size = 255), @p7='?' (Size = 4000), @p8='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Materials] ([Id], [BaseCost], [CreatedAt], [CreatedById], [Description], [IsActive], [Name], [Unit], [UpdatedAt])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8);
+[01:35:48 INF] Material created successfully: 3911b4bd-76ae-48f5-8bf0-ae1a03c96b50
+[01:35:48 INF] Executing CreatedAtActionResult, writing value of type 'SalesQuotation.Application.Dtos.ApiResponse`1[[SalesQuotation.Application.Dtos.MaterialDto, SalesQuotation.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+[01:35:48 INF] Executed action SalesQuotation.API.Controllers.MaterialController.CreateMaterial (SalesQuotation.API) in 44.8021ms
+[01:35:48 INF] Executed endpoint 'SalesQuotation.API.Controllers.MaterialController.CreateMaterial (SalesQuotation.API)'
+[01:35:48 INF] Request finished HTTP/1.1 POST http://localhost:5132/api/material - 201 null application/json; charset=utf-8 46.9534ms

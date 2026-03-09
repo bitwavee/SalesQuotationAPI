@@ -13,14 +13,16 @@ namespace SalesQuotation.Application.Services;
 public class FileService : IFileService
 {
     private readonly ApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
     private readonly ILogger<FileService> _logger;
     private readonly string _uploadDirectory;
     private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx", ".xls", ".xlsx" };
     private const long MaxFileSize = 10 * 1024 * 1024; // 10 MB
 
-    public FileService(ApplicationDbContext context, ILogger<FileService> logger)
+    public FileService(ApplicationDbContext context, ICurrentUserService currentUser, ILogger<FileService> logger)
     {
         _context = context;
+        _currentUser = currentUser;
         _logger = logger;
         _uploadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
 
@@ -77,7 +79,7 @@ public class FileService : IFileService
             FileType = file.ContentType,
             FileSizeBytes = (int)file.Length,
             FilePath = Path.Combine("uploads", uniqueFileName).Replace("\\", "/"),
-            UploadedById = Guid.NewGuid(), // Should be injected from context
+            UploadedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow
         };
 

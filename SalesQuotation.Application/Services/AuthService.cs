@@ -1,8 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SalesQuotation.Domain.Entities;
+using SalesQuotation.Infrastructure.Data;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -13,11 +16,13 @@ namespace SalesQuotation.Application.Services;
 /// </summary>
 public class AuthService : IAuthService
 {
+    private readonly ApplicationDbContext _context;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IConfiguration configuration, ILogger<AuthService> logger)
+    public AuthService(ApplicationDbContext context, IConfiguration configuration, ILogger<AuthService> logger)
     {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -33,19 +38,23 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
-        // This is a placeholder implementation
-        // In production, fetch user from database and verify password hash
-        var user = new User
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted && u.IsActive);
+
+        if (user == null)
         {
-            Id = Guid.NewGuid(),
-            Name = "Test User",
-            Email = email,
-            Phone = null,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow
-        };
+            _logger.LogWarning("Login failed: no active user found for email {Email}", email);
+            throw new UnauthorizedAccessException("Invalid credentials");
+        }
+
+        if (!VerifyPassword(password, user.PasswordHash))
+        {
+            _logger.LogWarning("Login failed: wrong password for email {Email}", email);
+            throw new UnauthorizedAccessException("Invalid credentials");
+        }
 
         var token = GenerateToken(user);
+        _logger.LogInformation("User {Email} logged in successfully", email);
 
         return (user, token);
     }
@@ -67,12 +76,12 @@ public class AuthService : IAuthService
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new System.Security.Claims.ClaimsIdentity(new[]
+            Subject = new ClaimsIdentity(new[]
             {
-                new System.Security.Claims.Claim("sub", user.Id.ToString()),
-                new System.Security.Claims.Claim("email", user.Email),
-                new System.Security.Claims.Claim("name", user.Name),
-                new System.Security.Claims.Claim("role", user.Role.ToString())
+                new Claim("sub", user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             }),
             Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JwtSettings:ExpiryMinutes"] ?? "10080")),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -83,27 +92,40 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
-    /// Verifies a password hash against a plaintext password
+    /// Verifies a plaintext password against a stored hash.
+    /// Supports HMAC-SHA256 "key:hash" format used by StaffService.
     /// </summary>
-    private bool VerifyPassword(string password, string hash)
+    private bool VerifyPassword(string password, string storedHash)
     {
-        // Using PBKDF2 for password verification
-        // In production, use a proper password hashing library like BCrypt or Argon2
-        byte[] hashBytes = Convert.FromBase64String(hash);
-        byte[] salt = new byte[16];
-        Array.Copy(hashBytes, 0, salt, 0, 16);
+        if (string.IsNullOrWhiteSpace(storedHash))
+            return false;
 
-        var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000, System.Security.Cryptography.HashAlgorithmName.SHA256);
-        byte[] hash_result = pbkdf2.GetBytes(20);
-
-        for (int i = 0; i < 20; i++)
+        // HMAC-SHA256 format: "base64(key):base64(hash)"
+        if (storedHash.Contains(':'))
         {
-            if (hashBytes[i + 16] != hash_result[i])
-            {
-                return false;
-            }
+            var parts = storedHash.Split(':');
+            if (parts.Length != 2) return false;
+
+            byte[] keyBytes = Convert.FromBase64String(parts[0]);
+            byte[] expectedHash = Convert.FromBase64String(parts[1]);
+
+            using var hmac = new HMACSHA256(keyBytes);
+            byte[] computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+            return CryptographicOperations.FixedTimeEquals(computedHash, expectedHash);
         }
 
-        return true;
+        return false;
+    }
+
+    /// <summary>
+    /// Hashes a password using HMAC-SHA256 (same scheme as StaffService).
+    /// Returns "base64(key):base64(hash)".
+    /// </summary>
+    public static string HashPassword(string password)
+    {
+        using var hmac = new HMACSHA256();
+        var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        return Convert.ToBase64String(hmac.Key) + ":" + Convert.ToBase64String(hash);
     }
 }

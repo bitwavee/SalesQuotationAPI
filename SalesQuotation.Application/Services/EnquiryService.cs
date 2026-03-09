@@ -14,12 +14,14 @@ public class EnquiryService : IEnquiryService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICurrentUserService _currentUser;
     private readonly ILogger<EnquiryService> _logger;
 
-    public EnquiryService(ApplicationDbContext context, IMapper mapper, ILogger<EnquiryService> logger)
+    public EnquiryService(ApplicationDbContext context, IMapper mapper, ICurrentUserService currentUser, ILogger<EnquiryService> logger)
     {
         _context = context;
         _mapper = mapper;
+        _currentUser = currentUser;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -78,6 +80,7 @@ public class EnquiryService : IEnquiryService
             CustomerAddress = dto.CustomerAddress,
             Status = "INITIATED",
             Notes = dto.Notes,
+            CreatedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -169,7 +172,7 @@ public class EnquiryService : IEnquiryService
             EnquiryId = enquiryId,
             NewStatus = dto.Status,
             Comment = dto.Notes,
-            CreatedById = Guid.NewGuid(), // Should be injected from context
+            CreatedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow
         };
 

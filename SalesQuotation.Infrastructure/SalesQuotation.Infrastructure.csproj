@@ -15,4 +15,4 @@
     <ProjectReference Include="..\SalesQuotation.Domain\SalesQuotation.Domain.csproj" />
   </ItemGroup>
 
-</Project>
+  </Project>

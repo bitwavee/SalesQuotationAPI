@@ -14,12 +14,14 @@ public class QuotationService : IQuotationService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICurrentUserService _currentUser;
     private readonly ILogger<QuotationService> _logger;
 
-    public QuotationService(ApplicationDbContext context, IMapper mapper, ILogger<QuotationService> logger)
+    public QuotationService(ApplicationDbContext context, IMapper mapper, ICurrentUserService currentUser, ILogger<QuotationService> logger)
     {
         _context = context;
         _mapper = mapper;
+        _currentUser = currentUser;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -93,6 +95,7 @@ public class QuotationService : IQuotationService
             TotalAmount = 0,
             Notes = dto.Notes,
             Status = "DRAFT",
+            CreatedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
