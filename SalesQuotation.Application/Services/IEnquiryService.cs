@@ -7,8 +7,8 @@ namespace SalesQuotation.Application.Services;
 /// </summary>
 public interface IEnquiryService
 {
-    Task<IEnumerable<EnquiryDto>> GetAllAsync();
-    Task<IEnumerable<EnquiryDto>> GetStaffEnquiriesAsync(Guid staffId);
+    Task<IEnumerable<EnquiryDto>> GetAllAsync(string? status = null);
+    Task<IEnumerable<EnquiryDto>> GetStaffEnquiriesAsync(Guid staffId, string? status = null);
     Task<EnquiryDto?> GetByIdAsync(Guid id);
     Task<EnquiryDto> CreateAsync(CreateEnquiryDto dto);
     Task UpdateAsync(Guid id, UpdateEnquiryDto dto);

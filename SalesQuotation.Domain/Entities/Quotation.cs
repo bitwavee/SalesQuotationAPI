@@ -2,7 +2,7 @@
 
 public class Quotation
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
     public Guid EnquiryId { get; set; }
     public string QuotationNumber { get; set; } = string.Empty;
     public DateTime QuotationDate { get; set; }
@@ -16,8 +16,8 @@ public class Quotation
     public string? PdfPath { get; set; }
     public Guid CreatedById { get; set; }
     public DateTime? SentAt { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
     // Navigation properties
     public Enquiry? Enquiry { get; set; }

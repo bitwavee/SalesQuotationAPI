@@ -49,6 +49,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.EnquiryNumber).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.PackageTitle).HasMaxLength(200);
             entity.HasIndex(e => e.EnquiryNumber).IsUnique();
             entity.HasOne(e => e.CreatedBy).WithMany(u => u.CreatedEnquiries).HasForeignKey(e => e.CreatedById).OnDelete(DeleteBehavior.NoAction);
             entity.HasOne(e => e.AssignedStaff).WithMany(u => u.AssignedEnquiries).HasForeignKey(e => e.AssignedStaffId).OnDelete(DeleteBehavior.NoAction);
@@ -108,6 +109,8 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<FileUpload>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.Amount).HasPrecision(18, 2);
+            entity.Property(e => e.Cost).HasPrecision(18, 2);
             entity.HasOne(e => e.Enquiry).WithMany(eq => eq.Attachments).HasForeignKey(e => e.EnquiryId).OnDelete(DeleteBehavior.NoAction);
             entity.HasOne(e => e.Quotation).WithMany(q => q.Attachments).HasForeignKey(e => e.QuotationId).OnDelete(DeleteBehavior.NoAction);
             entity.HasOne(e => e.UploadedBy).WithMany().HasForeignKey(e => e.UploadedById).OnDelete(DeleteBehavior.NoAction);

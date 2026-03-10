@@ -79,9 +79,9 @@ public class AuthService : IAuthService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim("sub", user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new Claim("email", user.Email),
+                new Claim("unique_name", user.Name),
+                new Claim("role", user.Role.ToString())
             }),
             Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["JwtSettings:ExpiryMinutes"] ?? "10080")),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

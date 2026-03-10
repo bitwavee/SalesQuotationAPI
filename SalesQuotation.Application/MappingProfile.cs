@@ -39,7 +39,9 @@ public class MappingProfile : Profile
         // EnquiryStatusConfig -> EnquiryStatusConfigDto
         CreateMap<EnquiryStatusConfig, EnquiryStatusConfigDto>()
             .ForMember(d => d.StatusKey, o => o.MapFrom(s => s.StatusValue))
-            .ForMember(d => d.Color, o => o.MapFrom(s => s.ColorHex));
+            .ForMember(d => d.Color, o => o.MapFrom(s => s.ColorHex))
+            .ForMember(d => d.RequiredFields, o => o.MapFrom(s => s.RequiredFields))
+            .ForMember(d => d.FieldPermissions, o => o.MapFrom(s => s.FieldPermissions));
 
         // EnquiryProgress -> EnquiryProgressDto
         CreateMap<EnquiryProgress, EnquiryProgressDto>()

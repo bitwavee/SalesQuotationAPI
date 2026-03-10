@@ -25,30 +25,38 @@ public class EnquiryService : IEnquiryService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<IEnumerable<EnquiryDto>> GetAllAsync()
+    public async Task<IEnumerable<EnquiryDto>> GetAllAsync(string? status = null)
     {
         _logger.LogInformation("Getting all enquiries");
-        
-        var enquiries = await _context.Enquiries
+
+        var query = _context.Enquiries
             .Include(e => e.AssignedStaff)
             .Include(e => e.Measurements)
             .Include(e => e.Quotations)
-            .Where(e => !e.IsDeleted)
-            .ToListAsync();
+            .Where(e => !e.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(status))
+            query = query.Where(e => e.Status == status);
+
+        var enquiries = await query.ToListAsync();
 
         return _mapper.Map<IEnumerable<EnquiryDto>>(enquiries);
     }
 
-    public async Task<IEnumerable<EnquiryDto>> GetStaffEnquiriesAsync(Guid staffId)
+    public async Task<IEnumerable<EnquiryDto>> GetStaffEnquiriesAsync(Guid staffId, string? status = null)
     {
         _logger.LogInformation("Getting enquiries for staff: {StaffId}", staffId);
-        
-        var enquiries = await _context.Enquiries
+
+        var query = _context.Enquiries
             .Include(e => e.AssignedStaff)
             .Include(e => e.Measurements)
             .Include(e => e.Quotations)
-            .Where(e => e.AssignedStaffId == staffId && !e.IsDeleted)
-            .ToListAsync();
+            .Where(e => e.AssignedStaffId == staffId && !e.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(status))
+            query = query.Where(e => e.Status == status);
+
+        var enquiries = await query.ToListAsync();
 
         return _mapper.Map<IEnumerable<EnquiryDto>>(enquiries);
     }
@@ -80,6 +88,7 @@ public class EnquiryService : IEnquiryService
             CustomerAddress = dto.CustomerAddress,
             Status = "INITIATED",
             Notes = dto.Notes,
+            PackageTitle = dto.PackageTitle,
             CreatedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow

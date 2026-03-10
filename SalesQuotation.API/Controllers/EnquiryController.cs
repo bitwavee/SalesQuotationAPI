@@ -26,22 +26,22 @@ public class EnquiryController : ControllerBase
     /// Get all enquiries (Admin sees all, Staff sees own)
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<IEnumerable<EnquiryDto>>>> GetAll()
+    public async Task<ActionResult<ApiResponse<IEnumerable<EnquiryDto>>>> GetAll([FromQuery] string? status = null)
     {
         try
         {
-            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            var role = User.FindFirst("role")?.Value;
             var userId = User.FindFirst("sub")?.Value;
 
             IEnumerable<EnquiryDto> enquiries;
 
             if (role == "Admin")
             {
-                enquiries = await _enquiryService.GetAllAsync();
+                enquiries = await _enquiryService.GetAllAsync(status);
             }
             else if (!string.IsNullOrEmpty(userId))
             {
-                enquiries = await _enquiryService.GetStaffEnquiriesAsync(Guid.Parse(userId));
+                enquiries = await _enquiryService.GetStaffEnquiriesAsync(Guid.Parse(userId), status);
             }
             else
             {

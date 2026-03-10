@@ -70,6 +70,7 @@ builder.Services.AddScoped<IEnquiryStatusConfigService, EnquiryStatusConfigServi
 builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IMeasurementConversionService, MeasurementConversionService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 // ========== VALIDATION ==========
 builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();

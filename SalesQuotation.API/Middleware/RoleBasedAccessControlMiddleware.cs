@@ -9,11 +9,10 @@ public class RoleBasedAccessControlMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<RoleBasedAccessControlMiddleware> _logger;
 
-    // Admin-only endpoints
+    // Admin-only endpoints (Staff fully blocked from write operations)
     private static readonly string[] AdminOnlyPaths = new[]
     {
         "/api/staff",
-        "/api/material",
         "/api/enquirystatusconfig"
     };
 
@@ -60,6 +59,19 @@ public class RoleBasedAccessControlMiddleware
                 });
                 return;
             }
+        }
+
+        // Staff can read materials (Price tab) but not modify
+        if (userRole == "Staff" && path.StartsWith("/api/material") && method != "GET")
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                success = false,
+                error = "Access denied. Admin role required for modifying materials.",
+                code = "FORBIDDEN"
+            });
+            return;
         }
 
         // Staff can read and create on enquiry/measurement/quotation paths

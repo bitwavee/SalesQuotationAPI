@@ -106,8 +106,7 @@ public class EnquiryProgressController : ControllerBase
         {
             // Update enquiry status
             var updateDto = new UpdateEnquiryDto { Status = request.Status };
-            // Note: UpdateAsync should exist in IEnquiryService
-            // For now, we'll call it directly on the controller
+            await _enquiryService.UpdateAsync(enquiryId, updateDto);
 
             // Add progress record
             await _enquiryService.AddEnquiryProgressAsync(enquiryId, request);

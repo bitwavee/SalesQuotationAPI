@@ -79,6 +79,7 @@ public class FileService : IFileService
             FileType = file.ContentType,
             FileSizeBytes = (int)file.Length,
             FilePath = Path.Combine("uploads", uniqueFileName).Replace("\\", "/"),
+            Category = category,
             UploadedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow
         };
@@ -88,17 +89,7 @@ public class FileService : IFileService
 
         _logger.LogInformation($"File uploaded successfully: {fileUpload.Id}");
 
-        return new FileUploadDto
-        {
-            Id = fileUpload.Id,
-            EnquiryId = fileUpload.EnquiryId ?? Guid.Empty,
-            FileName = fileUpload.FileName,
-            FileType = fileUpload.FileType ?? "",
-            FileSize = fileUpload.FileSizeBytes ?? 0,
-            FilePath = fileUpload.FilePath,
-            Category = "ATTACHMENT",
-            UploadedAt = fileUpload.CreatedAt
-        };
+        return MapToDto(fileUpload);
     }
 
     public async Task<FileUploadDto?> GetByIdAsync(Guid id)
@@ -108,17 +99,7 @@ public class FileService : IFileService
         if (file == null)
             return null;
 
-        return new FileUploadDto
-        {
-            Id = file.Id,
-            EnquiryId = file.EnquiryId ?? Guid.Empty,
-            FileName = file.FileName,
-            FileType = file.FileType ?? "",
-            FileSize = file.FileSizeBytes ?? 0,
-            FilePath = file.FilePath,
-            Category = "ATTACHMENT",
-            UploadedAt = file.CreatedAt
-        };
+        return MapToDto(file);
     }
 
     public async Task<IEnumerable<FileUploadDto>> GetEnquiryFilesAsync(Guid enquiryId)
@@ -128,17 +109,7 @@ public class FileService : IFileService
             .OrderByDescending(f => f.CreatedAt)
             .ToListAsync();
 
-        return files.Select(f => new FileUploadDto
-        {
-            Id = f.Id,
-            EnquiryId = f.EnquiryId ?? Guid.Empty,
-            FileName = f.FileName,
-            FileType = f.FileType ?? "",
-            FileSize = f.FileSizeBytes ?? 0,
-            FilePath = f.FilePath,
-            Category = "ATTACHMENT",
-            UploadedAt = f.CreatedAt
-        });
+        return files.Select(MapToDto);
     }
 
     public async Task DeleteAsync(Guid id)
@@ -185,5 +156,22 @@ public class FileService : IFileService
         }
 
         return await File.ReadAllBytesAsync(physicalPath);
+    }
+
+    private static FileUploadDto MapToDto(FileUpload f)
+    {
+        return new FileUploadDto
+        {
+            Id = f.Id,
+            EnquiryId = f.EnquiryId ?? Guid.Empty,
+            FileName = f.FileName,
+            FileType = f.FileType ?? "",
+            FileSize = f.FileSizeBytes ?? 0,
+            FilePath = f.FilePath,
+            Category = f.Category ?? "ATTACHMENT",
+            Amount = f.Amount,
+            Cost = f.Cost,
+            UploadedAt = f.CreatedAt
+        };
     }
 }

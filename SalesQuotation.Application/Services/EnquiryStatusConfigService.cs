@@ -58,6 +58,8 @@ public class EnquiryStatusConfigService : IEnquiryStatusConfigService
             DisplayOrder = dto.DisplayOrder,
             ColorHex = dto.Color,
             IsActive = true,
+            RequiredFields = dto.RequiredFields,
+            FieldPermissions = dto.FieldPermissions,
             CreatedById = _currentUser.GetUserId(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -92,6 +94,10 @@ public class EnquiryStatusConfigService : IEnquiryStatusConfigService
             config.ColorHex = dto.Color;
         if (dto.IsActive.HasValue)
             config.IsActive = dto.IsActive.Value;
+        if (dto.RequiredFields != null)
+            config.RequiredFields = dto.RequiredFields;
+        if (dto.FieldPermissions != null)
+            config.FieldPermissions = dto.FieldPermissions;
 
         config.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();

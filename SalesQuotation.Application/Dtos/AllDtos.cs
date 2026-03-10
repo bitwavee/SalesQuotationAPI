@@ -85,6 +85,7 @@ public class EnquiryDto
     public UserDto? AssignedStaff { get; set; }
     public string Status { get; set; } = string.Empty;
     public string? Notes { get; set; }
+    public string? PackageTitle { get; set; }
     public int MeasurementsCount { get; set; }
     public int QuotationsCount { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -98,6 +99,7 @@ public class CreateEnquiryDto
     public string CustomerPhone { get; set; } = string.Empty;
     public string? CustomerAddress { get; set; }
     public string? Notes { get; set; }
+    public string? PackageTitle { get; set; }
 }
 
 public class UpdateEnquiryDto
@@ -225,6 +227,8 @@ public class EnquiryStatusConfigDto
     public int DisplayOrder { get; set; }
     public string? Color { get; set; }
     public bool IsActive { get; set; }
+    public string? RequiredFields { get; set; }
+    public string? FieldPermissions { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 
@@ -234,6 +238,8 @@ public class CreateEnquiryStatusConfigDto
     public string StatusKey { get; set; } = string.Empty;
     public int DisplayOrder { get; set; }
     public string? Color { get; set; }
+    public string? RequiredFields { get; set; }
+    public string? FieldPermissions { get; set; }
 }
 
 public class UpdateEnquiryStatusConfigDto
@@ -243,6 +249,8 @@ public class UpdateEnquiryStatusConfigDto
     public int? DisplayOrder { get; set; }
     public string? Color { get; set; }
     public bool? IsActive { get; set; }
+    public string? RequiredFields { get; set; }
+    public string? FieldPermissions { get; set; }
 }
 
 public class EnquiryProgressDto
@@ -270,6 +278,8 @@ public class FileUploadDto
     public long FileSize { get; set; }
     public string FilePath { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
+    public decimal? Amount { get; set; }
+    public decimal? Cost { get; set; }
     public DateTime UploadedAt { get; set; }
 }
 
@@ -277,4 +287,27 @@ public class AssignEnquiryDto
 {
     public Guid EnquiryId { get; set; }
     public Guid StaffId { get; set; }
+}
+
+public class MeasurementConvertDto
+{
+    public string Type { get; set; } = string.Empty;
+    public decimal Length { get; set; }
+    public decimal Breadth { get; set; }
+}
+
+public class MeterToSqftDto
+{
+    public decimal Length { get; set; }
+    public decimal Breadth { get; set; }
+}
+
+public class ReportSummaryDto
+{
+    public int TotalEnquiries { get; set; }
+    public int TotalQuotations { get; set; }
+    public int TotalStaff { get; set; }
+    public Dictionary<string, int> EnquiriesByStatus { get; set; } = new();
+    public IEnumerable<EnquiryDto> RecentEnquiries { get; set; } = [];
+    public decimal RevenueTotal { get; set; }
 }

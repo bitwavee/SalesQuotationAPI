@@ -90,13 +90,8 @@ public class MeasurementService : IMeasurementService
         // Serialize measurement data to JSON
         var measurementDataJson = JsonSerializer.Serialize(dto.MeasurementData);
 
-        // Calculate value (example: length * breadth for area)
-        decimal calculatedValue = 0;
-        if (dto.MeasurementData.Count >= 2)
-        {
-            var values = dto.MeasurementData.Values.ToList();
-            calculatedValue = values[0] * values[1];
-        }
+        // Calculate value based on category type
+        decimal calculatedValue = CalculateValue(category.CategoryKey, dto.MeasurementData);
 
         var measurement = new Measurement
         {
@@ -149,12 +144,9 @@ public class MeasurementService : IMeasurementService
         {
             measurement.MeasurementData = JsonSerializer.Serialize(dto.MeasurementData);
 
-            // Recalculate value
-            var values = dto.MeasurementData.Values.ToList();
-            if (values.Count >= 2)
-            {
-                measurement.CalculatedValue = values[0] * values[1];
-            }
+            // Recalculate value based on category
+            var category = await _context.MeasurementCategories.FindAsync(measurement.CategoryId);
+            measurement.CalculatedValue = CalculateValue(category?.CategoryKey ?? "", dto.MeasurementData);
         }
 
         if (!string.IsNullOrWhiteSpace(dto.Notes))
@@ -186,6 +178,17 @@ public class MeasurementService : IMeasurementService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Measurement deleted successfully: {MeasurementId}", id);
+    }
+
+    private static decimal CalculateValue(string categoryKey, Dictionary<string, decimal> data)
+    {
+        return categoryKey.ToLowerInvariant() switch
+        {
+            "area" => data.GetValueOrDefault("length") * data.GetValueOrDefault("width"),
+            "length" => data.GetValueOrDefault("value"),
+            "volume" => data.GetValueOrDefault("length") * data.GetValueOrDefault("width") * data.GetValueOrDefault("height"),
+            _ => data.Values.Aggregate(1m, (a, b) => a * b)
+        };
     }
 }
 

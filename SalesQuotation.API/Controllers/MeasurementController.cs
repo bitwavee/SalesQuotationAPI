@@ -204,15 +204,35 @@ public class MeasurementController : ControllerBase
     /// Convert measurement units
     /// </summary>
     [HttpPost("convert")]
-    public ActionResult<ApiResponse<dynamic>> ConvertMeasurement([FromBody] dynamic conversionRequest)
+    public ActionResult<ApiResponse<object>> ConvertMeasurement([FromBody] MeasurementConvertDto request)
     {
         try
         {
-            // Example: { "type": "meterToSqFt", "length": 10, "breadth": 5 }
-            return Ok(new ApiResponse<dynamic>
+            decimal result = 0;
+            string unit = "sqft";
+
+            switch (request.Type?.ToLower())
+            {
+                case "metertosqft":
+                case "meter-to-sqft":
+                    result = _conversionService.ConvertMeterToSquareFeet(request.Length, request.Breadth);
+                    unit = "sqft";
+                    break;
+                case "sqfttometer":
+                case "sqft-to-meter":
+                    result = _conversionService.ConvertSquareFeetToMeter(request.Length * request.Breadth);
+                    unit = "sqm";
+                    break;
+                default:
+                    result = request.Length * request.Breadth;
+                    unit = "sqft";
+                    break;
+            }
+
+            return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Data = new { Message = "Use specific endpoints for conversion" }
+                Data = new { Result = result, Unit = unit }
             });
         }
         catch (Exception ex)
@@ -231,25 +251,16 @@ public class MeasurementController : ControllerBase
     /// Convert square meters to square feet
     /// </summary>
     [HttpPost("convert/meter-to-sqft")]
-    public ActionResult<ApiResponse<dynamic>> ConvertMeterToSquareFeet([FromBody] dynamic request)
+    public ActionResult<ApiResponse<object>> ConvertMeterToSquareFeet([FromBody] MeterToSqftDto request)
     {
         try
         {
-            decimal length = request.length;
-            decimal breadth = request.breadth;
+            var result = _conversionService.ConvertMeterToSquareFeet(request.Length, request.Breadth);
 
-            var result = _conversionService.ConvertMeterToSquareFeet(length, breadth);
-
-            return Ok(new ApiResponse<dynamic>
+            return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Data = new 
-                { 
-                    Length = length,
-                    Breadth = breadth,
-                    SquareMeters = length * breadth,
-                    SquareFeet = result
-                }
+                Data = new { Result = result }
             });
         }
         catch (Exception ex)

@@ -2,15 +2,18 @@
 
 public class FileUpload
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
     public Guid? EnquiryId { get; set; }
     public Guid? QuotationId { get; set; }
     public string FileName { get; set; } = string.Empty;
     public string FilePath { get; set; } = string.Empty;
     public string? FileType { get; set; }
     public int? FileSizeBytes { get; set; }
+    public string? Category { get; set; }
+    public decimal? Amount { get; set; }
+    public decimal? Cost { get; set; }
     public Guid UploadedById { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
 
     // Navigation properties
     public Enquiry? Enquiry { get; set; }
